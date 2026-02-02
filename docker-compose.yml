@@ -1,0 +1,44 @@
+services:
+  wyoming-whisper:
+    image: rhasspy/wyoming-whisper:latest
+    container_name: wyoming-whisper
+    restart: unless-stopped
+    ports:
+      - "10300:10300"
+    volumes:
+      - ./data:/data
+    command: >
+      --uri tcp://0.0.0.0:10300
+      --model small-int8
+      --language ko
+      --beam-size 1
+
+  wyoming-stt-proxy:
+    build: .
+    container_name: wyoming-stt-proxy
+    restart: unless-stopped
+    ports:
+      - "10301:10301"
+    environment:
+      # proxy가 listen할 주소/포트
+      - LISTEN_HOST=0.0.0.0
+      - LISTEN_PORT=10301
+
+      # upstream whisper 주소/포트 (같은 compose면 서비스명으로)
+      - UPSTREAM_HOST=wyoming-whisper
+      - UPSTREAM_PORT=10300
+
+      # 룰 파일
+      - RULES_FILE=/app/rules.yaml
+
+      # 디버그 로그
+      - LOG_LEVEL=INFO
+
+      # 같은 요청 중복(너가 연속으로 말하거나 재호출)로 upstream이 깨지는 걸 완화
+      - MIN_REQUEST_INTERVAL_MS=700
+    depends_on:
+      - wyoming-whisper
+    volumes:
+      - /home/utylee/temp/docker_volumes/wyoming-stt-proxy:/app:ro
+      # - ./rules.yaml:/app/rules.yaml:ro
+
