@@ -33,3 +33,6 @@ __pycache__/
 *.pyc
 .venv/
 .envrc
+
+# ===etc===
+tags

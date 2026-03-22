@@ -32,7 +32,8 @@ services:
       - RULES_FILE=/app/rules.yaml
 
       # 디버그 로그
-      - LOG_LEVEL=INFO
+      # - LOG_LEVEL=INFO
+      - LOG_LEVEL=DEBUG
 
       # 같은 요청 중복(너가 연속으로 말하거나 재호출)로 upstream이 깨지는 걸 완화
       - MIN_REQUEST_INTERVAL_MS=700
